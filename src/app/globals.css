@@ -11,8 +11,8 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 18, 18, 18;
+    --background-end-rgb:  18, 18, 18;
   }
 }
 
@@ -51,7 +51,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 	0 0% 9.8%;
     --foreground: 60 9.1% 97.8%;
     --card: 20 14.3% 4.1%;
     --card-foreground: 60 9.1% 97.8%;
