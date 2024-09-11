@@ -23,10 +23,7 @@ const Switch = React.forwardRef<
         "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0 flex items-center justify-center"
       )}
     >
-      <div className="relative w-full h-full flex items-center justify-center">
-        <IoSunnySharp className="absolute text-yellow-500 transition-opacity duration-200 peer-data-[state=checked]:opacity-100" />
-        <IoMoonSharp className="absolute text-blue-500 transition-opacity duration-200 peer-data-[state=unchecked]:opacity-100" />
-      </div>
+     
     </SwitchPrimitives.Thumb>
   </SwitchPrimitives.Root>
 ));

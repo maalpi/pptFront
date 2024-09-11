@@ -6,6 +6,7 @@ import io from "socket.io-client";
 
 import { Navigation } from "@/components/Nav";
 import { Button } from "@/components/ui/button";
+import socket from "@/utils/socket"; // Importando o socket compartilhado
 
 import { 
   Table, 
@@ -18,8 +19,6 @@ import {
   TableRow 
 } from "@/components/ui/table";
 
-// Configura o socket
-const socket = io("http://localhost:3001");
 
 export default function OnlineUsers() {
   const [onlineUsers, setOnlineUsers] = useState({});
@@ -55,20 +54,18 @@ export default function OnlineUsers() {
 
     // Redireciona ambos os usuários para a sala de chat particular
     socket.on("chat-start", (room) => {
-      console.log('Recebendo convite de chat para a sala:', room);
       router.push(`/batepapo/${room}`); // Redireciona para a página de chat com o ID da sala
     });
 
     return () => {
       socket.off("online-users");
       socket.off("chat-request");
-      socket.off("chat-accepted");
+      socket.off("chat-start");
     };
   }, [router]);
 
   // Inicia uma conexão de chat com outro usuário
   const initiateChat = (socketId: string) => {
-    console.log("Tentando conectar com o socketId:", socketId); // Adiciona log
     socket.emit("initiate-chat", socketId);
   };
 
