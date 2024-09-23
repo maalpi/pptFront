@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, PropsWithChildren, useState } from "react";
 
 import DarkLightToggle from "./Theme";
-export const Navigation: React.FC<PropsWithChildren<{ user: string}>> = ({user}) => {
+export const Navigation = () => {
 
     return (
         <header>
