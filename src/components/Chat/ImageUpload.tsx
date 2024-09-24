@@ -1,18 +1,14 @@
 import { Input } from "@/components/ui/input";
 
 interface ImageUploadProps {
-  onImageSelect: (image: string | null) => void;
+  onImageSelect: (image: File | null) => void; // Aceita File ou null
 }
 
 export function ImageUpload({ onImageSelect }: ImageUploadProps) {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        onImageSelect(reader.result as string); // Envia a imagem carregada para o componente pai
-      };
-      reader.readAsDataURL(file);
+      onImageSelect(file); // Envia o próprio arquivo
     }
   };
 

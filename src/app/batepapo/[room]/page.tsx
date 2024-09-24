@@ -1,5 +1,4 @@
-'use client';
-
+'use client'
 import { useState, useEffect } from 'react';
 import socket from '@/utils/socket';
 import { Navigation } from "@/components/Nav";
@@ -7,6 +6,7 @@ import { WebcamDialog } from '@/components/Chat/WebcamDialog';
 import { ImageUpload } from '@/components/Chat/ImageUpload';
 import { ChatHeader } from '@/components/Chat/ChatHeader';
 import { Button } from '@/components/ui/button';
+import { VencedorDialog } from '@/components/Chat/WinnerDialog';
 
 interface Props {
   params: { room: string };
@@ -16,8 +16,10 @@ export default function ChatBox({ params }: Props) {
   const [messages, setMessages] = useState<{ content: string; from: string }[]>([]);
   const [usersInRoom, setUsersInRoom] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null); // Armazenando o arquivo de imagem
   const [imageSent, setImageSent] = useState(false); // Flag para controlar se a imagem já foi enviada
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [vencedor, setVencedor] = useState<string | null>(null);
   const roomId = params.room;
 
   useEffect(() => {
@@ -34,10 +36,16 @@ export default function ChatBox({ params }: Props) {
         setMessages(prev => [...prev, message]);
       });
 
+      socket.on("fim-partida", (message) => {
+        setVencedor(message); // Define o vencedor recebido da API
+        setIsDialogOpen(true); // Abre o dialog
+      });
+
       return () => {
         socket.emit("leave-room", roomId);
         socket.off("room-users");
         socket.off("message");
+        socket.off("fim-partida");
       };
     };
 
@@ -45,11 +53,18 @@ export default function ChatBox({ params }: Props) {
   }, [roomId]);
 
   // Enviar imagem
-  const sendMessage = () => {
-    if (image && !imageSent) {
-      socket.emit("image", { roomId, content: image });
-      setImageSent(true); // Marcar imagem como enviada
-      setImage(null); // Limpar a imagem após o envio
+  const sendImage = () => {
+    if (imageFile && !imageSent) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const imageData = reader.result as ArrayBuffer; // Carregar a imagem como ArrayBuffer
+        socket.emit("image", { roomId, content: imageData, fileName: imageFile.name });
+        setImageSent(true); // Marcar imagem como enviada
+        setImageFile(null); // Limpar o arquivo após o envio
+      };
+
+      reader.readAsArrayBuffer(imageFile); // Ler a imagem como ArrayBuffer
     }
   };
 
@@ -59,20 +74,23 @@ export default function ChatBox({ params }: Props) {
       <ChatHeader usersInRoom={usersInRoom} />
 
       <div className="mt-10 flex flex-row">
-        <WebcamDialog onCapture={setImage} />
+        <WebcamDialog onCapture={setImageFile} /> {/* Agora setImageFile recebe o arquivo */}
         <p className='pl-3'>ou</p>
-        <ImageUpload onImageSelect={setImage} />
+        <ImageUpload onImageSelect={setImageFile} /> {/* Enviar o arquivo de imagem */}
       </div>
 
-      {image && (
+      {imageFile && (
         <div className="my-4">
-          <img src={image} alt="Preview" className="w-72 h-72" />
+          <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-72 h-72" />
         </div>
       )}
 
-      <Button onClick={sendMessage} className="bg-blue-500 text-white p-2 rounded mt-2" disabled={imageSent}>
+      <Button onClick={sendImage} className="bg-blue-500 text-white p-2 rounded mt-2" disabled={imageSent}>
         Enviar
       </Button>
+
+      {/* Dialog para mostrar o vencedor */}
+      <VencedorDialog open={isDialogOpen} setOpen={setIsDialogOpen} vencedor={vencedor} />
     </div>
   );
 }
