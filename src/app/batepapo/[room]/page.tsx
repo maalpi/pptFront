@@ -37,7 +37,9 @@ export default function ChatBox({ params }: Props) {
       });
 
       socket.on("fim-partida", (message) => {
-        setVencedor(message); // Define o vencedor recebido da API
+        let mes: string = message.replace('Player 1', usersInRoom[1]);
+        mes = message.replace('Player 2', usersInRoom[0]);
+        setVencedor(mes); // Define o vencedor recebido da API
         setIsDialogOpen(true); // Abre o dialog
       });
 
