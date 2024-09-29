@@ -17,6 +17,12 @@ interface WebcamDialogProps {
   onCapture: (image: File | null) => void;
 }
 
+const videoConstraints = {
+  width: 1280,
+  height: 720,
+  facingMode: "user"
+}
+
 // Função para converter base64 para um objeto File
 function base64ToFile(base64String: string, filename: string): File {
   const arr = base64String.split(',');
@@ -59,7 +65,9 @@ export function WebcamDialog({ onCapture }: WebcamDialogProps) {
               audio={false}
               ref={webcamRef}
               screenshotFormat="image/jpeg"
-              width={300}
+              width={1280}
+              height={720 }
+              videoConstraints={videoConstraints}
             />
           </AlertDialogDescription>
         </AlertDialogHeader>
