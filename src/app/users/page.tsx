@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import io from "socket.io-client";
 
 import { Navigation } from "@/components/Nav";
 import { Button } from "@/components/ui/button";
@@ -88,9 +87,13 @@ export default function OnlineUsers() {
                   <p>{onlineUsers[socketId]}</p>
                 </TableCell>
                 <TableCell>
-                  <Button className="h-[30px]" onClick={() => initiateChat(socketId)}>
-                    Conectar
-                  </Button>
+                  {onlineUsers[socketId] === username ? (
+                    <p>você</p>
+                    ) : (
+                      <Button className="h-[30px]" onClick={() => initiateChat(socketId)}>
+                        Conectar
+                      </Button>
+                    )}
                 </TableCell>
               </TableRow>
             ))}

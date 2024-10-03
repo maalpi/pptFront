@@ -7,18 +7,18 @@ import { ImageUpload } from '@/components/Chat/ImageUpload';
 import { ChatHeader } from '@/components/Chat/ChatHeader';
 import { Button } from '@/components/ui/button';
 import { VencedorDialog } from '@/components/Chat/WinnerDialog';
+import { Spinner } from '@/components/ui/spinner';
 
 interface Props {
   params: { room: string };
 }
 
 export default function ChatBox({ params }: Props) {
-  const [messages, setMessages] = useState<{ content: string; from: string }[]>([]);
   const [usersInRoom, setUsersInRoom] = useState<string[]>([]);
-  const [newMessage, setNewMessage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null); // Armazenando o arquivo de imagem
   const [imageSent, setImageSent] = useState(false); // Flag para controlar se a imagem já foi enviada
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [vencedor, setVencedor] = useState<string | null>(null);
   const roomId = params.room;
 
@@ -32,15 +32,10 @@ export default function ChatBox({ params }: Props) {
         setUsersInRoom(users);
       });
 
-      socket.on("message", (message) => {
-        setMessages(prev => [...prev, message]);
-      });
-
       socket.on("fim-partida", (message) => {
-        let mes: string = message.replace('Player 1', usersInRoom[1]);
-        mes = message.replace('Player 2', usersInRoom[0]);
-        setVencedor(mes); // Define o vencedor recebido da API
+        setVencedor(message); // Define o vencedor recebido da API
         setIsDialogOpen(true); // Abre o dialog
+        setIsLoading(false);
       });
 
       return () => {
@@ -64,6 +59,7 @@ export default function ChatBox({ params }: Props) {
         socket.emit("image", { roomId, content: imageData, fileName: imageFile.name });
         setImageSent(true); // Marcar imagem como enviada
         setImageFile(null); // Limpar o arquivo após o envio
+        setIsLoading(true);
       };
 
       reader.readAsArrayBuffer(imageFile); // Ler a imagem como ArrayBuffer
@@ -91,6 +87,11 @@ export default function ChatBox({ params }: Props) {
         Enviar
       </Button>
 
+      {isLoading && 
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <Spinner size="large" />
+        </div>
+      } 
       {/* Dialog para mostrar o vencedor */}
       <VencedorDialog open={isDialogOpen} setOpen={setIsDialogOpen} vencedor={vencedor} />
     </div>

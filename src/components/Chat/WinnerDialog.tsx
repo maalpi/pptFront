@@ -7,7 +7,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
   } from "@/components/ui/alert-dialog";
-  
+  import { useRouter } from 'next/router';
+
   interface VencedorDialogProps {
     open: boolean;
     setOpen: (open: boolean) => void;
@@ -15,6 +16,9 @@ import {
   }
   
   export function VencedorDialog({ open, setOpen, vencedor }: VencedorDialogProps) {
+    const handleRedirect = () => {
+      window.location.href = '/users'; // Redireciona para a página /lobby
+    };
     return (
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
@@ -25,7 +29,7 @@ import {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setOpen(false)}>Fechar</AlertDialogAction>
+            <AlertDialogAction onClick={handleRedirect}>Lobby</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
